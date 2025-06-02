@@ -1,6 +1,5 @@
 package com.karmadev0.karmamusic
 
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -15,7 +14,6 @@ import android.widget.TextView
 
 class FullPlayerFragment : Fragment() {
 
-    private var mediaPlayer: MediaPlayer? = null
     private lateinit var seekBar: SeekBar
     private lateinit var tvCurrent: TextView
     private lateinit var tvRemaining: TextView
@@ -23,8 +21,9 @@ class FullPlayerFragment : Fragment() {
     private lateinit var btnNext: ImageButton
     private lateinit var btnPrevious: ImageButton
     private lateinit var tvTitle: TextView
+    private lateinit var tvArtist: TextView
+
     private val handler = Handler(Looper.getMainLooper())
-    private var songUri: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,11 +33,6 @@ class FullPlayerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Recupera la URI de la canción desde los argumentos
-        arguments?.getString("SONG_URI")?.let {
-            songUri = Uri.parse(it)
-        }
-
         // Views
         seekBar = view.findViewById(R.id.seekBar)
         tvCurrent = view.findViewById(R.id.tvCurrent)
@@ -47,68 +41,69 @@ class FullPlayerFragment : Fragment() {
         btnNext = view.findViewById(R.id.btnNext)
         btnPrevious = view.findViewById(R.id.btnPrevious)
         tvTitle = view.findViewById(R.id.songTitle)
+        tvArtist = view.findViewById(R.id.songArtist)
 
-        // Recuperar título si viene como argumento
-        val title = arguments?.getString("SONG_TITLE")
-        if (title != null) tvTitle.text = title
+        // Carga inicial
+        tvTitle.text = arguments?.getString("SONG_TITLE") ?: "Sin título"
+        tvArtist.text = arguments?.getString("SONG_ARTIST") ?: "Desconocido"
 
-        // Prepara MediaPlayer
-        songUri?.let { uri ->
-            mediaPlayer = MediaPlayer().apply {
-                setDataSource(requireContext(), uri)
-                prepare()
-                start()
-            }
-        }
-
-        // Configura SeekBar
-        mediaPlayer?.let {
-            seekBar.max = it.duration
-            updateSeekBar()
-        }
-
-        // Botones
+        // Configura botones
         btnPlayPause.setOnClickListener {
-            mediaPlayer?.let {
-                if (it.isPlaying) {
-                    it.pause()
-                    btnPlayPause.setImageResource(R.drawable.ic_play_arrow)
-                } else {
-                    it.start()
-                    btnPlayPause.setImageResource(R.drawable.ic_pause)
-                }
-            }
+            (activity as? MainActivity)?.togglePlayPause()
+            updatePlayPauseIcon()
         }
 
         btnNext.setOnClickListener {
-            // Aquí luego vas a implementar lógica para ir a la siguiente canción
+            (activity as? MainActivity)?.playNextSong()
         }
 
         btnPrevious.setOnClickListener {
-            // Aquí luego vas a implementar lógica para retroceder canción
+            (activity as? MainActivity)?.playPreviousSong()
         }
+
+        // Configura SeekBar
+        updateSeekBar()
+    }
+
+    fun updateSongInfo(song: Song) {
+        tvTitle.text = song.title
+        tvArtist.text = song.artist
+        updateSeekBar()
+        updatePlayPauseIcon()
+    }
+
+    private fun updatePlayPauseIcon() {
+        val isPlaying = (activity as? MainActivity)?.mediaPlayer?.isPlaying ?: false
+        val icon = if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play_arrow
+        btnPlayPause.setImageResource(icon)
+    }
+
+    private fun updateSeekBar() {
+        val mediaPlayer = (activity as? MainActivity)?.mediaPlayer ?: return
+        seekBar.max = mediaPlayer.duration
+
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                val mp = (activity as? MainActivity)?.mediaPlayer
+                if (mp != null) {
+                    seekBar.progress = mp.currentPosition
+                    tvCurrent.text = formatTime(mp.currentPosition)
+                    tvRemaining.text = "-${formatTime(mp.duration - mp.currentPosition)}"
+                    handler.postDelayed(this, 1000)
+                }
+            }
+        }, 0)
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) mediaPlayer?.seekTo(progress)
+                if (fromUser) {
+                    (activity as? MainActivity)?.mediaPlayer?.seekTo(progress)
+                }
             }
 
             override fun onStartTrackingTouch(sb: SeekBar?) {}
             override fun onStopTrackingTouch(sb: SeekBar?) {}
         })
-    }
-
-    private fun updateSeekBar() {
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                mediaPlayer?.let {
-                    seekBar.progress = it.currentPosition
-                    tvCurrent.text = formatTime(it.currentPosition)
-                    tvRemaining.text = "-${formatTime(it.duration - it.currentPosition)}"
-                    handler.postDelayed(this, 1000)
-                }
-            }
-        }, 0)
     }
 
     private fun formatTime(ms: Int): String {
@@ -121,7 +116,5 @@ class FullPlayerFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         handler.removeCallbacksAndMessages(null)
-        mediaPlayer?.release()
-        mediaPlayer = null
     }
 }

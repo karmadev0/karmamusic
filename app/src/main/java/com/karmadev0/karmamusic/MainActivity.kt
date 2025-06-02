@@ -8,6 +8,7 @@ import android.net.Uri
 import android.database.Cursor
 import android.media.MediaPlayer
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatActivity
@@ -93,7 +94,6 @@ class MainActivity : AppCompatActivity() {
             setupRecyclerView(songList)
             currentSongIndex = 0
             playSong(songList[currentSongIndex])
-            openFullPlayerFragment(songList[currentSongIndex])
         }
     }
 
@@ -101,7 +101,6 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerViewSongs)
         songAdapter = SongAdapter(songList) { song ->
             currentSongIndex = songList.indexOf(song)
-            openFullPlayerFragment(song)
             playSong(song)
         }
         recyclerView.adapter = songAdapter
@@ -109,20 +108,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun playSong(song: Song) {
+        mediaPlayer?.reset()
         mediaPlayer?.release()
+        mediaPlayer = null
+
         mediaPlayer = MediaPlayer().apply {
             setDataSource(this@MainActivity, song.contentUri)
             prepare()
             start()
+
             setOnCompletionListener {
                 playNextSong()
             }
         }
+
+        updateOrOpenPlayer(song)
     }
 
     fun togglePlayPause() {
         mediaPlayer?.let {
-            if (it.isPlaying) it.pause() else it.start()
+            if (it.isPlaying) {
+                it.pause()
+            } else {
+                it.start()
+            }
         }
     }
 
@@ -131,7 +140,6 @@ class MainActivity : AppCompatActivity() {
             currentSongIndex++
             val nextSong = songList[currentSongIndex]
             playSong(nextSong)
-            openFullPlayerFragment(nextSong)
         }
     }
 
@@ -140,25 +148,29 @@ class MainActivity : AppCompatActivity() {
             currentSongIndex--
             val previousSong = songList[currentSongIndex]
             playSong(previousSong)
-            openFullPlayerFragment(previousSong)
         }
     }
 
-    private fun openFullPlayerFragment(song: Song) {
-        val bundle = Bundle().apply {
-            putString("SONG_URI", song.contentUri.toString())
-            putString("SONG_TITLE", song.title)
-            putString("SONG_ARTIST", song.artist)
-        }
+    private fun updateOrOpenPlayer(song: Song) {
+        val fragment = supportFragmentManager.findFragmentById(R.id.playerContainer)
+        if (fragment is FullPlayerFragment && fragment.isVisible) {
+            fragment.updateSongInfo(song)
+        } else {
+            val bundle = Bundle().apply {
+                putString("SONG_URI", song.contentUri.toString())
+                putString("SONG_TITLE", song.title)
+                putString("SONG_ARTIST", song.artist)
+            }
 
-        val fragment = FullPlayerFragment().apply {
-            arguments = bundle
-        }
+            val newFragment = FullPlayerFragment().apply {
+                arguments = bundle
+            }
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.playerContainer, fragment)
-            .addToBackStack(null)
-            .commit()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.playerContainer, newFragment)
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     override fun onDestroy() {
