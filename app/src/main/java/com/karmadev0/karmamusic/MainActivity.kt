@@ -214,6 +214,9 @@ class MainActivity : AppCompatActivity() {
             fm.beginTransaction()
                 .show(fm.findFragmentById(R.id.miniContainer)!!)
                 .commitNow()
+
+            // ✅ Mostrar de nuevo la lista cuando se cierra el FullPlayer
+            findViewById<RecyclerView>(R.id.recyclerViewSongs).visibility = View.VISIBLE
         } else {
             super.onBackPressed()
         }
