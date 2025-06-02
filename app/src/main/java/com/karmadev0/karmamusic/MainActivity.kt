@@ -22,7 +22,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var songAdapter: SongAdapter
-    private var mediaPlayer: MediaPlayer? = null
+    var mediaPlayer: MediaPlayer? = null
+
+    private var songList: List<Song> = emptyList()
+    private var currentSongIndex: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadMusicFiles() {
-        val songList = mutableListOf<Song>()
+        val list = mutableListOf<Song>()
         val collection = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Audio.Media._ID,
@@ -81,18 +84,23 @@ class MainActivity : AppCompatActivity() {
                 val duration = it.getLong(durationColumn)
                 val contentUri = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id.toString())
 
-                songList.add(Song(id, title, artist, album, duration, contentUri))
+                list.add(Song(id, title, artist, album, duration, contentUri))
             }
         }
 
-        if (songList.isNotEmpty()) {
+        if (list.isNotEmpty()) {
+            songList = list
             setupRecyclerView(songList)
+            currentSongIndex = 0
+            playSong(songList[currentSongIndex])
+            openFullPlayerFragment(songList[currentSongIndex])
         }
     }
 
     private fun setupRecyclerView(songList: List<Song>) {
         recyclerView = findViewById(R.id.recyclerViewSongs)
         songAdapter = SongAdapter(songList) { song ->
+            currentSongIndex = songList.indexOf(song)
             openFullPlayerFragment(song)
             playSong(song)
         }
@@ -100,15 +108,39 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
-    private fun playSong(song: Song) {
+    fun playSong(song: Song) {
         mediaPlayer?.release()
         mediaPlayer = MediaPlayer().apply {
             setDataSource(this@MainActivity, song.contentUri)
             prepare()
             start()
             setOnCompletionListener {
-                println("Canción terminada: ${song.title}")
+                playNextSong()
             }
+        }
+    }
+
+    fun togglePlayPause() {
+        mediaPlayer?.let {
+            if (it.isPlaying) it.pause() else it.start()
+        }
+    }
+
+    fun playNextSong() {
+        if (currentSongIndex < songList.size - 1) {
+            currentSongIndex++
+            val nextSong = songList[currentSongIndex]
+            playSong(nextSong)
+            openFullPlayerFragment(nextSong)
+        }
+    }
+
+    fun playPreviousSong() {
+        if (currentSongIndex > 0) {
+            currentSongIndex--
+            val previousSong = songList[currentSongIndex]
+            playSong(previousSong)
+            openFullPlayerFragment(previousSong)
         }
     }
 

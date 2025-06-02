@@ -22,6 +22,7 @@ class FullPlayerFragment : Fragment() {
     private lateinit var btnPlayPause: ImageButton
     private lateinit var btnNext: ImageButton
     private lateinit var btnPrevious: ImageButton
+    private lateinit var tvTitle: TextView
     private val handler = Handler(Looper.getMainLooper())
     private var songUri: Uri? = null
 
@@ -45,6 +46,11 @@ class FullPlayerFragment : Fragment() {
         btnPlayPause = view.findViewById(R.id.btnPlayPause)
         btnNext = view.findViewById(R.id.btnNext)
         btnPrevious = view.findViewById(R.id.btnPrevious)
+        tvTitle = view.findViewById(R.id.songTitle)
+
+        // Recuperar título si viene como argumento
+        val title = arguments?.getString("SONG_TITLE")
+        if (title != null) tvTitle.text = title
 
         // Prepara MediaPlayer
         songUri?.let { uri ->
@@ -61,7 +67,7 @@ class FullPlayerFragment : Fragment() {
             updateSeekBar()
         }
 
-        // Listeners de botones
+        // Botones
         btnPlayPause.setOnClickListener {
             mediaPlayer?.let {
                 if (it.isPlaying) {
@@ -73,17 +79,22 @@ class FullPlayerFragment : Fragment() {
                 }
             }
         }
-        // NEXT / PREVIOUS quedan para tu lógica de lista
-        btnNext.setOnClickListener { /* saltar a siguiente */ }
-        btnPrevious.setOnClickListener { /* saltar a anterior */ }
 
-        // Manejar cambio manual de SeekBar
+        btnNext.setOnClickListener {
+            // Aquí luego vas a implementar lógica para ir a la siguiente canción
+        }
+
+        btnPrevious.setOnClickListener {
+            // Aquí luego vas a implementar lógica para retroceder canción
+        }
+
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(sb: SeekBar, pos: Int, fromUser: Boolean) {
-                if (fromUser) mediaPlayer?.seekTo(pos)
+            override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) mediaPlayer?.seekTo(progress)
             }
-            override fun onStartTrackingTouch(sb: SeekBar) {}
-            override fun onStopTrackingTouch(sb: SeekBar) {}
+
+            override fun onStartTrackingTouch(sb: SeekBar?) {}
+            override fun onStopTrackingTouch(sb: SeekBar?) {}
         })
     }
 
@@ -111,5 +122,6 @@ class FullPlayerFragment : Fragment() {
         super.onDestroyView()
         handler.removeCallbacksAndMessages(null)
         mediaPlayer?.release()
+        mediaPlayer = null
     }
 }
