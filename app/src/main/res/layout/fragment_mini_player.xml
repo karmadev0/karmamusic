@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/miniPlayerRoot"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:layout_gravity="bottom"
+    android:background="@android:color/black"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
+
+        <!-- Título de la canción -->
+        <TextView
+            android:id="@+id/tvMiniTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Título"
+            android:textColor="@android:color/white"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="16sp"
+            android:paddingEnd="8dp" />
+
+        <!-- Botón anterior -->
+        <ImageButton
+            android:id="@+id/btnMiniPrevious"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_previous"
+            android:contentDescription="Anterior"
+            app:tint="@android:color/white" />
+
+        <!-- Botón play/pause -->
+        <ImageButton
+            android:id="@+id/btnMiniPlayPause"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_play_arrow"
+            android:contentDescription="Play/Pause"
+            app:tint="@android:color/white" />
+
+        <!-- Botón siguiente -->
+        <ImageButton
+            android:id="@+id/btnMiniNext"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_next"
+            android:contentDescription="Siguiente"
+            app:tint="@android:color/white" />
+
+    </LinearLayout>
+</FrameLayout>

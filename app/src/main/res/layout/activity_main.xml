@@ -8,25 +8,39 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- Contenedor para el reproductor en pantalla completa -->
+    <!-- 1) Contenedor para el reproductor en pantalla completa -->
+    <!--    Ocupa desde el top de la pantalla hasta el top del mini-player -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/playerContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.karmadev0.karmamusic.FullPlayerFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/miniContainer"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="MergeRootFrame"/>
 
+    <!-- 2) RecyclerView para la lista de canciones -->
+    <!--    Está oculto por defecto (visibility="gone") y ocupa el mismo espacio que el playerContainer -->
     <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewSongs"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/playerContainer"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+        android:id="@+id/recyclerViewSongs"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/miniContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/list_item_song" />
+
+    <!-- 3) Contenedor para el mini reproductor -->
+    <!--    Anclado siempre en la parte inferior, con 64dp de alto -->
+    <FrameLayout
+        android:id="@+id/miniContainer"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
