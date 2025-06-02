@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:padding="16dp">
+
+    <!-- Título de la canción -->
+    <TextView
+        android:id="@+id/songTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Título de la canción"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:maxLines="1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Barra de progreso -->
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:thumbTint="@color/teal_200"
+        android:progressTint="@color/teal_200"
+        app:layout_constraintTop_toBottomOf="@id/songTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Tiempo transcurrido -->
+    <TextView
+        android:id="@+id/tvCurrent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0:00"
+        android:textColor="#AAAAAA"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/seekBar"
+        app:layout_constraintStart_toStartOf="@id/seekBar"/>
+
+    <!-- Tiempo restante -->
+    <TextView
+        android:id="@+id/tvRemaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-0:00"
+        android:textColor="#AAAAAA"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/seekBar"
+        app:layout_constraintEnd_toEndOf="@id/seekBar"/>
+
+    <!-- Botonera de control -->
+    <LinearLayout
+        android:id="@+id/controlButtons"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@id/tvCurrent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Anterior -->
+        <ImageButton
+            android:id="@+id/btnPrevious"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_previous"
+            android:contentDescription="@string/desc_previous"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="@color/white"/>
+
+        <!-- Play / Pause -->
+        <ImageButton
+            android:id="@+id/btnPlayPause"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginHorizontal="24dp"
+            android:src="@drawable/ic_play_arrow"
+            android:contentDescription="@string/desc_play_pause"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="@color/teal_200"/>
+
+        <!-- Siguiente -->
+        <ImageButton
+            android:id="@+id/btnNext"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_next"
+            android:contentDescription="@string/desc_next"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="@color/white"/>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
