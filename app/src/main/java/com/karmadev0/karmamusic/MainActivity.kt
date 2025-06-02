@@ -2,6 +2,7 @@ package com.karmadev0.karmamusic
 
 import android.os.Bundle
 import android.os.Build
+import android.view.View
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -214,6 +215,17 @@ class MainActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+
+    fun showMiniPlayerAndSongList() {
+        // Mostrar el fragmento MiniPlayer
+        supportFragmentManager.beginTransaction()
+            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+            .replace(R.id.playerContainer, MiniPlayerFragment())
+            .commit()
+
+        // Mostrar la lista de canciones
+        findViewById<RecyclerView>(R.id.recyclerViewSongs).visibility = View.VISIBLE
     }
 
     override fun onDestroy() {
