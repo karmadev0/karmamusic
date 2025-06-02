@@ -3,21 +3,35 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="?attr/selectableItemBackground"
+    android:paddingVertical="12dp"
+    android:paddingHorizontal="16dp">
 
     <TextView
         android:id="@+id/textViewTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:text="Titulo de la canción"/>
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Título de la canción" />
 
     <TextView
         android:id="@+id/textViewArtist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="#BBBBBB"
         android:textSize="14sp"
-        android:text="Artista"/>
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Artista" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"
+        android:background="#333333" />
 
 </LinearLayout>

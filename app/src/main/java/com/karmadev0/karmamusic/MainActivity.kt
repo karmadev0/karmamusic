@@ -132,6 +132,8 @@ class MainActivity : AppCompatActivity() {
         }
         recyclerView.adapter = songAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        recyclerView.visibility = View.VISIBLE
     }
 
     fun playSong(song: Song) {
