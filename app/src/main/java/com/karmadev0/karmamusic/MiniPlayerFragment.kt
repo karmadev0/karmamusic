@@ -54,6 +54,11 @@ class MiniPlayerFragment : Fragment() {
         updatePlayPauseIcon()
     }
 
+    fun updateMiniPlayerUI(song: Song) {
+        tvMiniTitle.text = song.title
+        updatePlayPauseIcon()
+    }
+
     private fun updatePlayPauseIcon() {
         val isPlaying = (activity as? MainActivity)?.mediaPlayer?.isPlaying ?: false
         val icon = if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play_arrow

@@ -30,23 +30,26 @@ class MainActivity : AppCompatActivity() {
 
     // Lista completa de canciones y posición actual
     private var songList: List<Song> = emptyList()
-    var currentSongIndex: Int = 0       // Hacerlo 'var' y público permite acceder desde fragmentos
+    var currentSongIndex: Int = 0
     private var currentSong: Song? = null
+
+    // Referencia al MiniPlayerFragment para poder actualizarlo
+    private var miniPlayerFragment: MiniPlayerFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 1) Cargar el MiniPlayerFragment desde el inicio
+        // 1) Inicializar y guardar referencia del MiniPlayerFragment
+        miniPlayerFragment = MiniPlayerFragment()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.miniContainer, MiniPlayerFragment())
+            .replace(R.id.miniContainer, miniPlayerFragment!!)
             .commit()
 
         // 2) Pedir permisos y cargar canciones
         checkAndRequestPermissions()
     }
 
-    // Método para devolver la canción actual
     fun getCurrentSong(): Song? = currentSong
 
     private fun checkAndRequestPermissions() {
@@ -125,24 +128,20 @@ class MainActivity : AppCompatActivity() {
     private fun setupRecyclerView(songList: List<Song>) {
         recyclerView = findViewById(R.id.recyclerViewSongs)
         songAdapter = SongAdapter(songList) { song ->
-            // Al hacer clic en un ítem de la lista:
             currentSongIndex = songList.indexOf(song)
             currentSong = songList[currentSongIndex]
             playSong(songList[currentSongIndex])
         }
         recyclerView.adapter = songAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
-
         recyclerView.visibility = View.VISIBLE
     }
 
     fun playSong(song: Song) {
-        // 1) Si ya había un MediaPlayer, reinícialo y libéralo
         mediaPlayer?.reset()
         mediaPlayer?.release()
         mediaPlayer = null
 
-        // 2) Crea y ejecuta un nuevo MediaPlayer
         mediaPlayer = MediaPlayer().apply {
             setDataSource(this@MainActivity, song.contentUri)
             prepare()
@@ -152,7 +151,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 3) Actualiza o abre el FullPlayerFragment
+        currentSong = song
+
+        // Notificar al MiniPlayerFragment del cambio de canción
+        miniPlayerFragment?.updateMiniPlayerUI(song)
+
         updateOrOpenPlayer(song)
     }
 
@@ -181,15 +184,12 @@ class MainActivity : AppCompatActivity() {
     private fun updateOrOpenPlayer(song: Song) {
         val fragment = supportFragmentManager.findFragmentById(R.id.playerContainer)
         if (fragment is FullPlayerFragment && fragment.isVisible) {
-            // Si el FullPlayer ya está delante, solo actualizamos sus datos
             fragment.updateSongInfo(song)
         } else {
-            // Ocultamos el MiniPlayerFragment
             supportFragmentManager.beginTransaction()
                 .hide(supportFragmentManager.findFragmentById(R.id.miniContainer)!!)
                 .commitNow()
 
-            // Abrimos (o reemplazamos) el FullPlayerFragment
             val bundle = Bundle().apply {
                 putString("SONG_URI", song.contentUri.toString())
                 putString("SONG_TITLE", song.title)
@@ -202,15 +202,15 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.playerContainer, newFragment)
                 .addToBackStack(null)
                 .commit()
+
+            findViewById<RecyclerView>(R.id.recyclerViewSongs).visibility = View.GONE
         }
     }
 
     override fun onBackPressed() {
         val fm = supportFragmentManager
         if (fm.backStackEntryCount > 0) {
-            // Si hay un FullPlayerFragment en back stack, lo removemos
             fm.popBackStack()
-            // Luego mostramos de nuevo el MiniPlayerFragment
             fm.beginTransaction()
                 .show(fm.findFragmentById(R.id.miniContainer)!!)
                 .commitNow()
@@ -220,13 +220,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showMiniPlayerAndSongList() {
-        // Mostrar el fragmento MiniPlayer
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
             .replace(R.id.playerContainer, MiniPlayerFragment())
             .commit()
 
-        // Mostrar la lista de canciones
         findViewById<RecyclerView>(R.id.recyclerViewSongs).visibility = View.VISIBLE
     }
 
