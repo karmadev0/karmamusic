@@ -26,8 +26,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:thumbTint="@color/teal_200"
-        android:progressTint="@color/teal_200"
+        android:thumbTint="#03DAC5"
+        android:progressTint="#03DAC5"
         app:layout_constraintTop_toBottomOf="@id/songTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -72,9 +72,9 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_previous"
-            android:contentDescription="@string/desc_previous"
+            android:contentDescription="Anterior"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:tint="@color/white"/>
+            app:tint="#FFFFFF"/>
 
         <!-- Play / Pause -->
         <ImageButton
@@ -83,9 +83,9 @@
             android:layout_height="64dp"
             android:layout_marginHorizontal="24dp"
             android:src="@drawable/ic_play_arrow"
-            android:contentDescription="@string/desc_play_pause"
+            android:contentDescription="Reproducir / Pausar"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:tint="@color/teal_200"/>
+            app:tint="#03DAC5"/>
 
         <!-- Siguiente -->
         <ImageButton
@@ -93,9 +93,9 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_next"
-            android:contentDescription="@string/desc_next"
+            android:contentDescription="Siguiente"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:tint="@color/white"/>
+            app:tint="#FFFFFF"/>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
